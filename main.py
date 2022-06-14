@@ -1,0 +1,177 @@
+import telebot
+import random
+from telebot import types
+from decouple import config
+from googletrans import Translator
+
+#API of bot
+TOKEN = config('API_KEY')
+bot = telebot.TeleBot(TOKEN)
+print(f"{TOKEN} \n")
+#puplic var
+sudo = 1655098601
+botName = ["kroli", "krol", "كرولي"]
+admin_msg = {
+  'ban': ["ban", "baned","kick", "حظر", "بان", "باند"]
+}
+usersMsg ={
+    "hi" : ["hi", "hello", "hey", "hai"],
+    "hi_ar" : ["هلا", "هلو", "هاي" ],
+    "slam_ar" : ["سلام عليكم", "السلام عليكم", "سلام العليكم"],
+    'botName' : ["bot", "بوت"]
+}
+botMsg ={
+  "laveChat" : "sorry, but this chat im dosnt work in it. :(",
+  'botNameReply' : ["هلا", "شو محتاج", "مو فارغ", "مشغول", "هلا بيك عيوني"],
+  "ifMsgNotFromSudo" : "انت لست ادمن للقيام بالامر",
+  'ifMessageNotReplyBan' : "يجب ان ترد على الشخص الي تريده يتبند"
+}
+commands = {
+    'Translator' : ["tr", "Tr" , "/tr", "ترجم", "ترجملي", "ترجم لي"]
+}
+banMsg = {
+    'list1' : ["cat", "dog", "fuck", "fcd"]
+}
+
+# methdods
+#
+@bot.message_handler(commands=["start"])
+def msg_hand(message):
+    print("bot has reply of /start")
+
+
+    Keyboard = types.InlineKeyboardMarkup()
+    button1 = types.InlineKeyboardButton(text='↫main channel .',
+                                         url='https://t.me/MYMFYK')
+    button3 = types.InlineKeyboardButton(text=". OWNER↬",
+                                         url='https://t.me/nnk0o')
+    button4 = types.InlineKeyboardButton(
+    text="⇄Main Group⇄",
+    url = "https://t.me/+NdPJMtQWM7A5YjA6"
+    )
+    button5 = types.InlineKeyboardButton(
+    text="+Add me+",
+    url = 'https://t.me/Kr_ol_ibot?startgroup=Commands&admin=ban_users+restrict_members+delete_messages+add_admins+change_info+invite_users+pin_messages+manage_call+manage_chat+manage_video_chats+promote_members'
+    )
+    row_width = 1
+    Keyboard.add(
+    button1, button4 ,
+    button3,button5)
+    bot.reply_to(
+                    message,
+                    text= "welcome to kroli \n ↫a group telegram bot↬",
+                     reply_markup=Keyboard)
+                     
+
+#...........
+
+
+@bot.message_handler(func=lambda m: True)
+def msg_handerl_main(message):
+    msg = message.text.split()
+    chat_id = message.chat.id
+    #..................................
+    #a ban method work if you send ban
+    if message.text.lower() in admin_msg["ban"]:
+
+        if message.from_user.id == sudo:
+            if message.reply_to_message:
+                text = message.reply_to_message.from_user.id
+                text2 = message.reply_to_message.from_user.username
+                try:
+                    bot.kick_chat_member(
+                  chat_id,
+                  text
+                )
+                    bot.send_message(
+                  chat_id,
+                  text= "the user: {} Banned ∅ " .format(text2)
+                )
+                except:
+                  bot.reply_to(
+                    message,
+                    "err" #will this message change...
+                )  
+#...........................
+
+    elif message.text.lower() in usersMsg["hi"] : 
+        bot.reply_to(
+            message,
+            "Hello!"
+        )
+    elif message.text.lower() in usersMsg["hi_ar"]     :
+        bot.reply_to(
+        
+            message,
+            
+            "هلا ،كيفك"
+            
+            )   
+      #if word in words exacly like the code :        
+    for word in words :
+         #chack if the user msg in ban list's :'
+        if word in banMsg["list1"] :
+              #..
+            bot.reply_to(
+            message,
+            "noooo"
+            )
+#..........................................................................                        
+            
+#    elif message.text.lower() in usersMsg["botName"] :
+#    list1 = ["هلا", "شو محتاج", "مو فارغ", "مشغول", "هلا بيك عيوني"]
+#    ran = random.choice(list1)
+#    bot.reply_to(
+#            message,
+#            f"{ran}"
+#        )
+        #بعدين احل المشكله
+#.......
+     #this is a translate         
+    if msg[0] in commands['Translator'] :
+        if message.chat.type == 'group' or 'supergroup' :
+        #.
+            translator = Translator()
+             #translate a message by reply
+            if message.reply_to_message:
+                rmsg = message.reply_to_message.text
+                translation = translator.translate(" ".join(rmsg), dest="ar")
+                bot.reply_to(
+                     message,
+                     translation.text
+                     )
+            
+              # translate a text if it atfter (list):/tr   
+            else:
+            
+                translation = translator.translate(" ".join(msg[1:]), dest="ar")
+                bot.reply_to(
+                    message,
+                    translation.text
+                )
+#.................................................
+#message of if someone join or left your group
+#@bot.my_chat_member_handler()
+#def memberUpdate(message:types.#ChatMemberUpdated) :
+#    newMember = message.new_chat_member
+#    allowList = []
+#    if new.status == 'member' and message.#chat.id not in allowlist :
+
+@bot.my_chat_member_handler()   
+def leavA(message:types.ChatMemberUpdated):
+  update = message.new_chat_member
+  if update.status == "member" :
+    bot.send_message(
+      message.chat.id,
+    f"{botMsg['laveChat']}"
+    )
+    bot.leave_chat(message.chat.id)
+
+        
+        
+
+#polling
+def run():
+  print("BOT IS RUNNING...")
+  bot.infinity_polling()
+run()
